@@ -17,4 +17,21 @@
   height: 20px;
   width: 100px;
   background-color: dodgerblue;
+  position: absolute;
 }
+
+.usuario{
+   width: 100px;
+   height: 20px;
+   position: absolute;
+   background: tomato;
+}
+
+.bola{
+   height: 20px;
+   width: 20px;
+   position: absolute;
+   border-radius: 10px;
+   background-color: pink;
+}
+/* 40min */
