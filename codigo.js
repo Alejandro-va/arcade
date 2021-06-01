@@ -9,6 +9,18 @@ const anchoBloque = 100;
 const posicionInicialUsuario = [230, 10];
 let posicionActualUsuario = posicionInicialUsuario;
 
+//Definir posicion de la bola
+const posicionInicialBola = [270, 40];
+let posicionActualBola = posicionInicialBola;
+
+//Definicion particularidad de la bola
+let xDireccionBola = 2;
+let yDireccionBola = 2;
+let diametro = 20;//tamaño de la bola
+
+//definir timer
+let timerID
+
 //Definicion de la clase bloque
 class Bloque{
    //aki tomo las variables alto y ancho bloque pq para definir los tamaños cuando los pinte
@@ -80,7 +92,7 @@ function moverUsuario(e){
             if(posicionActualUsuario[0] > 0){//cero pq es el punto inical d x
                posicionActualUsuario[0] -= 10//le resto 10 a "x" pq son lo px q se mueve a la izquierda
                dibujarUsuario()
-               console.log( posicionActualUsuario)
+               //console.log( posicionActualUsuario)
             }
          break;
             case 'ArrowRight':
@@ -94,3 +106,96 @@ function moverUsuario(e){
 
 //Añadir evento escuchador para el documento de
 document.addEventListener('keydown', moverUsuario)
+
+//dibujar la bola
+function dibujarBola(){
+  bola.style.left = posicionActualBola[0] + 'px'; //x
+  bola.style.bottom = posicionActualBola[1] + 'px'; //y
+}
+const bola = document.createElement('div');
+bola.classList.add('bola'); //agrego la clase bola
+contenedor.appendChild(bola);
+dibujarBola()
+
+//aca debo dibujar todas las funciones q ejecuta la bola pq estes la function principal uso con el timer
+function moverBola(){
+  posicionActualBola[0] += xDireccionBola;
+  posicionActualBola[1] += yDireccionBola;
+  console.log(posicionActualBola[1])
+  dibujarBola();
+  revisarColision();
+  gameOver();
+}
+
+timerID = setInterval(moverBola, 20);
+
+function revisarColision(){
+  //COLISION CON BLOQUES
+  for(let i = 0; i < bloques.length; i++){//recorro el arry de bloques
+
+      if(
+        //en el eje X left es "-" y right "+", si la bola es mayor q el punto cero del bloque o menor q el punto maximo quiere decir q se encontraron (le puedo sumar el diametro de la bola a la posicion actual cuanteas vecs me de la gana) 
+        ((posicionActualBola[0] + diametro)> bloques[i].bottomLeft[0] && posicionActualBola[0] <bloques[i].bottomRight[0]) &&
+        //este es exactamente igual q el de arriba pero con el eje Y
+      ((posicionActualBola[1] + diametro) > bloques[i].bottomLeft[1] && posicionActualBola[1] < bloques[i].topLeft[1])
+      ){//creo una instacia iterable del array de la clase bloq q yo hice hace rato en el div q yo cree (los bloquecitos)
+        const todosLosBloques = Array.from(document.querySelectorAll('.bloque'))
+        //console.log(todosLosBloques)
+        todosLosBloques[i].classList.remove('bloque')//kito la clase y abajo elimino el bloque del array
+        bloques.splice(i,1)//elimino el bloq(indice, cantidad a eliminar)
+        cambiarDireccion()
+      }
+  }//end for
+
+  //COLISIONES CON LAS PAREDES
+  if(
+    //si la bola en X derecha llega (derecha pq es mayor) llega a  la pared derecha  (diametro=tamaño de bola)
+      posicionActualBola[0] >= (anchoTablero - diametro) ||
+      //si la bola en Y llega al piso del tablero
+      posicionActualBola[1] >= (altoTablero - diametro) ||
+      //si la bola en X llega a la pared izquierda
+      posicionActualBola[0] <= 0 ||
+      //si la bola en Y llega al tope del tablero
+      posicionActualBola[1] <= 0
+  ){
+    cambiarDireccion()
+  }
+
+  //COLISION CON EL USUARIO
+  if(
+    //(si la bola es mayor en izquierda x y menor en derecha x) y (bola mayor q suarion en "y" arriba y  menor q usuarion en "Y" abajo) entncs cambia de direccion
+    (posicionActualBola[0] > posicionActualUsuario[0] && posicionActualBola[0] < posicionActualUsuario[0] + anchoBloque) &&
+    (posicionActualBola[1] > posicionActualUsuario[1] && posicionInicialBola[1] < posicionActualUsuario[1] + altoBloque)
+  ){
+    cambiarDireccion()
+  }
+}// end revisarColision
+
+function gameOver() {
+  if(posicionInicialBola[1] <= 0){
+    clearInterval(timerID)
+   /*  puntuacion.innerHTML = "Perdiste"; */
+    document.removeEventListener('keydown', moverUsuario)
+  }
+}
+
+
+//Function de cambiar la direccion
+function cambiarDireccion() {
+  if (xDireccionBola === 2 && yDireccionBola === 2) {//arriba-derecha
+        yDireccionBola = -2 //abajo-derecha
+        return
+  }
+  if (xDireccionBola === 2 && yDireccionBola === -2) {//abajo-derecha
+    xDireccionBola = -2//abajo-izquierda
+    return
+  }
+  if (xDireccionBola === -2 && yDireccionBola === -2) {//abajo-izquierda
+    yDireccionBola = 2//arriba-izquierda
+    return
+  }
+  if (xDireccionBola === -2 && yDireccionBola === 2) {//arriba-izquierda
+    xDireccionBola = 2//arriba-derecha
+    return
+  }
+}
