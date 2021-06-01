@@ -8,6 +8,7 @@ const anchoBloque = 100;
 //definir posicion Usuario
 const posicionInicialUsuario = [230, 10];
 let posicionActualUsuario = posicionInicialUsuario;
+let velocidadUsuario = 15;
 
 //Definir posicion de la bola
 const posicionInicialBola = [270, 40];
@@ -90,14 +91,14 @@ function moverUsuario(e){
    switch (e.key) {
       case 'ArrowLeft'://nombre de la tecla, asi no le asigno numero
             if(posicionActualUsuario[0] > 0){//cero pq es el punto inical d x
-               posicionActualUsuario[0] -= 10//le resto 10 a "x" pq son lo px q se mueve a la izquierda
+               posicionActualUsuario[0] -= velocidadUsuario//le resto 10 a "x" pq son lo px q se mueve a la izquierda
                dibujarUsuario()
                //console.log( posicionActualUsuario)
             }
          break;
             case 'ArrowRight':
                if(posicionActualUsuario[0] < (anchoTablero - anchoBloque)){
-                  posicionActualUsuario[0] += 10//le sumo 10 a "x" pq son lo px q se mueve a la derecha
+                 posicionActualUsuario[0] += velocidadUsuario//le sumo 10 a "x" pq son lo px q se mueve a la derecha
                   dibujarUsuario()
                }
          break;
